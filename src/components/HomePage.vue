@@ -4,7 +4,7 @@
       <div class="flex bg-black border shadow p-3 bg-white">
         <span>Recive best courses about web devlopment</span>
       </div>
-
+      
       <!-- Hero with form  -->
       <div class="container pt-6 ">
         <div class="row pb-5 align-items-center ">
@@ -31,15 +31,19 @@
               <h3 class="text-light">Register and learn {{ text }}</h3>
             </div>
 
-            <div class="shadow-lg p-3 mb-5 bg-box-hero rounded p-3 p-md-5 p-lg-6 text-light">
+            <div
+              class="shadow-lg p-3 mb-5 bg-box-hero rounded p-3 p-md-5 p-lg-6 text-light"
+            >
               <h3>We'll send you lastest courses!</h3>
-              <form >
+                  <!-- call send email function -->
+              <form @submit.prevent ="addEmail(email)">
                 <div class="form-group">
                   <label>Reserve with your email </label>
                   <input
                     type="email"
                     placeholder="Your email"
                     class="form-control"
+                    v-model="email"
                   />
                   <small class="form-text  text-light"
                     >Your privacy is secure with us!</small
@@ -47,6 +51,11 @@
                   <button type="submit" class="btn btn-light mt-3">
                     Join
                   </button>
+
+                  <div class="alert alert-danger" role="alert">
+                    {{message}}
+                  </div>
+
                 </div>
               </form>
             </div>
@@ -168,13 +177,46 @@
 </template>
 
 <script>
+// @ = From the root path on the root
+import { Auth } from "@/firebase/auth.js";
+
 export default {
+  
   data() {
     return {
       title: "Learn something new!",
-      text: "HTML"
-    };
+      text: "HTML",
+      email: "",
+      message: "",
+    }
+  },
+  methods:{
+    //async , because comunicate with firebase
+    async addEmail(email) {
+      
+      var statusMessage = "We receive your mail, thanks!";
+      await Auth.createUserWithEmailAndPassword(email, this.randomPass(25)).catch(function(error){
+          if(error.code != "auth/email-already-in-use"){
+
+            statusMessage = error.message;
+          }
+      })
+      this.message  = statusMessage;
+      this.email = '' ;
+    },
+    randomPass (length){
+      var chars = "abcdfghijklmnopqrstuvwxy!#$%&/()=´+{}[]";
+      var password = "";
+      for(let x = 0; x<length; x++){
+      
+      let index = Math.floor(Math.random() * chars.length);
+        password += chars.charAt(index)
+      }
+      return password;
+    }
   }
+
+
 };
 </script>
 
@@ -182,11 +224,8 @@ export default {
 .sm {
   font-size: 3.5rem;
 }
-.bg-box-hero{
- background: #8E75CE;  /* fallback for old browsers */
-
-
-
+.bg-box-hero {
+  background: transparent; /* fallback for old browsers */
 }
 #home-page {
   background-color: #f1f1f0;

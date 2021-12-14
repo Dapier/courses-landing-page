@@ -7,8 +7,11 @@ import router from './router'
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 
-Vue.config.productionTip = false
+//firebase
+import {firestorePlugin} from 'vuefire'
 
+Vue.config.productionTip = false
+Vue.use(firestorePlugin);
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
